@@ -1,6 +1,8 @@
 package server
 
 import (
+	mooc "GourseAPI/internal/platform"
+	"GourseAPI/internal/platform/server/handler/courses"
 	"GourseAPI/internal/platform/server/handler/health"
 	"fmt"
 	"github.com/gin-gonic/gin"
@@ -10,12 +12,17 @@ import (
 type Server struct {
 	httpAddr string
 	engine   *gin.Engine
+
+	// deps
+	courseRepository mooc.CourseRepository
 }
 
-func New(host string, port uint) Server {
+func New(host string, port uint, courseRepository mooc.CourseRepository) Server {
 	srv := Server{
-		httpAddr: fmt.Sprintf("%s:%d", host, port),
 		engine:   gin.New(),
+		httpAddr: fmt.Sprintf("%s:%d", host, port),
+
+		courseRepository: courseRepository,
 	}
 
 	srv.registerRoutes()
@@ -23,12 +30,11 @@ func New(host string, port uint) Server {
 }
 
 func (s *Server) Run() error {
-	log.Println("Server is running on", s.httpAddr)
+	log.Println("Server running on", s.httpAddr)
 	return s.engine.Run(s.httpAddr)
 }
 
 func (s *Server) registerRoutes() {
 	s.engine.GET("/health", health.CheckHandler())
-	s.engine.POST("/courses", course.CreateHandler())
-
+	s.engine.POST("/courses", courses.CreateHandler(s.courseRepository))
 }

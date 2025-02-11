@@ -1,0 +1,9 @@
+# .mockery.yaml
+version: v2
+packages:
+  - name: mooc
+    interfaces:
+      - CourseRepository
+    case: snake
+    outpkg: storagemocks
+    output: platform/storage/storagemocks
