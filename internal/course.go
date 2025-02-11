@@ -6,63 +6,67 @@ import (
 	"errors"
 )
 
-// ErrEmptyCourseName is returned when the course name is empty.
-var ErrEmptyCourseName = errors.New("the field Course Name cannot be empty")
+var ErrEmptyCourseName = errors.New("the field Course Name can not be empty")
+var ErrInvalidCourseID = errors.New("invalid UUID")
 
-// ErrEmptyDuration is returned when the course duration is empty.
-var ErrEmptyDuration = errors.New("the field Duration cannot be empty")
-
-// CourseName represents the name of a course.
+// CourseName represents the course name.
 type CourseName struct {
 	value string
 }
 
-// NewCourseName creates a new CourseName instance
+// NewCourseName instantiate VO for CourseName
 func NewCourseName(value string) (CourseName, error) {
 	if value == "" {
 		return CourseName{}, ErrEmptyCourseName
 	}
 
-	return CourseName{value: value}, nil
+	return CourseName{
+		value: value,
+	}, nil
 }
 
-// String converts CourseName to a string.
+// String type converts the CourseName into string.
 func (name CourseName) String() string {
 	return name.value
 }
 
-// CourseDuration represents the duration of a course.
+var ErrEmptyDuration = errors.New("the field Duration can not be empty")
+
+// CourseDuration represents the course duration.
 type CourseDuration struct {
 	value string
 }
 
-// NewCourseDuration creates a new CourseDuration instance,
 func NewCourseDuration(value string) (CourseDuration, error) {
 	if value == "" {
 		return CourseDuration{}, ErrEmptyDuration
 	}
 
-	return CourseDuration{value: value}, nil
+	return CourseDuration{
+		value: value,
+	}, nil
 }
 
-// String converts CourseDuration to a string.
+// String type converts the CourseDuration into string.
 func (duration CourseDuration) String() string {
 	return duration.value
 }
 
-// CourseRepository defines the expected behavior of a course storage repository.
-type CourseRepository interface {
-	Save(ctx context.Context, course Course) error
-}
-
-// Course represents a course entity.
+// Course is the data structure that represents a course.
 type Course struct {
 	id       valueobjects.UUID
 	name     CourseName
 	duration CourseDuration
 }
 
-// NewCourse creates a new Course instance, validating its parameters.
+// CourseRepository defines the expected behaviour from a course storage.
+type CourseRepository interface {
+	Save(ctx context.Context, course Course) error
+}
+
+//go:generate mockery --case=snake --outpkg=storagemocks --output=platform/storage/storagemocks --name=CourseRepository
+
+// NewCourse creates a new course.
 func NewCourse(id, name, duration string) (Course, error) {
 	idVO, err := valueobjects.NewUUID(id)
 	if err != nil {
@@ -86,17 +90,17 @@ func NewCourse(id, name, duration string) (Course, error) {
 	}, nil
 }
 
-// ID returns the unique identifier of the course.
+// ID returns the course unique identifier.
 func (c Course) ID() valueobjects.UUID {
 	return c.id
 }
 
-// Name returns the name of the course.
+// Name returns the course name.
 func (c Course) Name() CourseName {
 	return c.name
 }
 
-// Duration returns the duration of the course.
+// Duration returns the course duration.
 func (c Course) Duration() CourseDuration {
 	return c.duration
 }

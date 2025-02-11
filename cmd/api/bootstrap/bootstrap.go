@@ -1,6 +1,8 @@
 package bootstrap
 
 import (
+	"GourseAPI/internal/creating"
+	"GourseAPI/internal/platform/bus/inmemory"
 	"GourseAPI/internal/platform/server"
 	"GourseAPI/internal/platform/storage/mysql"
 	"database/sql"
@@ -27,8 +29,17 @@ func Run() error {
 		return err
 	}
 
+	var (
+		commandBus = inmemory.NewCommandBus()
+	)
+
 	courseRepository := mysql.NewCourseRepository(db)
 
-	srv := server.New(host, port, courseRepository)
+	creatingCourseService := creating.NewCourseService(courseRepository)
+
+	createCourseCommandHandler := creating.NewCourseCommandHandler(creatingCourseService)
+	commandBus.Register(creating.CourseCommandType, createCourseCommandHandler)
+
+	srv := server.New(host, port, commandBus)
 	return srv.Run()
 }

@@ -1,12 +1,11 @@
 package mysql
 
 import (
+	mooc "GourseAPI/internal"
 	"context"
 	"database/sql"
 	"fmt"
 	"github.com/huandu/go-sqlbuilder"
-
-	mooc "GourseAPI/internal/platform"
 )
 
 // CourseRepository is a MySQL mooc.CourseRepository implementation.

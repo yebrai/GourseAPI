@@ -1,12 +1,12 @@
 package mysql
 
 import (
+	mooc "GourseAPI/internal"
 	"context"
 	"errors"
 	"github.com/DATA-DOG/go-sqlmock"
 	"testing"
 
-	mooc "GourseAPI/internal/platform"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )

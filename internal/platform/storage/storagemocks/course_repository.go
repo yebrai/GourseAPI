@@ -3,7 +3,7 @@
 package storagemocks
 
 import (
-	mooc "GourseAPI/internal/platform"
+	mooc "GourseAPI/internal"
 	context "context"
 
 	mock "github.com/stretchr/testify/mock"
@@ -18,10 +18,6 @@ type CourseRepository struct {
 func (_m *CourseRepository) Save(ctx context.Context, course mooc.Course) error {
 	ret := _m.Called(ctx, course)
 
-	if len(ret) == 0 {
-		panic("no return value specified for Save")
-	}
-
 	var r0 error
 	if rf, ok := ret.Get(0).(func(context.Context, mooc.Course) error); ok {
 		r0 = rf(ctx, course)
@@ -30,18 +26,4 @@ func (_m *CourseRepository) Save(ctx context.Context, course mooc.Course) error 
 	}
 
 	return r0
-}
-
-// NewCourseRepository creates a new instance of CourseRepository. It also registers a testing interface on the mock and a cleanup function to assert the mocks expectations.
-// The first argument is typically a *testing.T value.
-func NewCourseRepository(t interface {
-	mock.TestingT
-	Cleanup(func())
-}) *CourseRepository {
-	mock := &CourseRepository{}
-	mock.Mock.Test(t)
-
-	t.Cleanup(func() { mock.AssertExpectations(t) })
-
-	return mock
 }
