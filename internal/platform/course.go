@@ -1,10 +1,9 @@
 package mooc
 
 import (
+	"GourseAPI/valueobject"
 	"context"
 	"errors"
-
-	"GourseAPI/internal/platform/valueobject"
 )
 
 // ErrEmptyCourseName is returned when the course name is empty.
