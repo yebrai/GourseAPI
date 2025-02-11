@@ -1,7 +1,7 @@
 package mooc
 
 import (
-	"GourseAPI/valueobject"
+	"GourseAPI/internal/valueobjects"
 	"context"
 	"errors"
 )
@@ -57,14 +57,14 @@ type CourseRepository interface {
 
 // Course represents a course entity.
 type Course struct {
-	id       valueobject.UUID
+	id       valueobjects.UUID
 	name     CourseName
 	duration CourseDuration
 }
 
 // NewCourse creates a new Course instance, validating its parameters.
 func NewCourse(id, name, duration string) (Course, error) {
-	idVO, err := valueobject.NewUUID(id)
+	idVO, err := valueobjects.NewUUID(id)
 	if err != nil {
 		return Course{}, err
 	}
@@ -87,7 +87,7 @@ func NewCourse(id, name, duration string) (Course, error) {
 }
 
 // ID returns the unique identifier of the course.
-func (c Course) ID() valueobject.UUID {
+func (c Course) ID() valueobjects.UUID {
 	return c.id
 }
 

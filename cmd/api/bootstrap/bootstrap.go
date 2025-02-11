@@ -5,6 +5,8 @@ import (
 	"GourseAPI/internal/platform/storage/mysql"
 	"database/sql"
 	"fmt"
+
+	_ "github.com/go-sql-driver/mysql"
 )
 
 const (
