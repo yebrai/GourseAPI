@@ -14,6 +14,11 @@ type UUID struct {
 	value string
 }
 
+// Generate creates a new UUID.
+func GenerateUUID() UUID {
+	return UUID{value: uuid.NewString()}
+}
+
 // NewUUID instantiate the VO for UUID.
 func NewUUID(value string) (UUID, error) {
 	v, err := uuid.Parse(value)

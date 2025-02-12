@@ -1,13 +1,37 @@
 package mooc
 
 import (
-	"GourseAPI/internal/valueobjects"
+	"GourseAPI/kit/event"
 	"context"
 	"errors"
+	"fmt"
+	"github.com/google/uuid"
 )
 
 var ErrEmptyCourseName = errors.New("the field Course Name can not be empty")
 var ErrInvalidCourseID = errors.New("invalid UUID")
+
+// CourseID represents the course unique identifier.
+type CourseID struct {
+	value string
+}
+
+// NewCourseID instantiate the VO for CourseID
+func NewCourseID(value string) (CourseID, error) {
+	v, err := uuid.Parse(value)
+	if err != nil {
+		return CourseID{}, fmt.Errorf("%w: %s", ErrInvalidCourseID, value)
+	}
+
+	return CourseID{
+		value: v.String(),
+	}, nil
+}
+
+// String type converts the CourseID into string.
+func (id CourseID) String() string {
+	return id.value
+}
 
 // CourseName represents the course name.
 type CourseName struct {
@@ -54,9 +78,11 @@ func (duration CourseDuration) String() string {
 
 // Course is the data structure that represents a course.
 type Course struct {
-	id       valueobjects.UUID
+	id       CourseID
 	name     CourseName
 	duration CourseDuration
+
+	events []event.Event
 }
 
 // CourseRepository defines the expected behaviour from a course storage.
@@ -68,7 +94,7 @@ type CourseRepository interface {
 
 // NewCourse creates a new course.
 func NewCourse(id, name, duration string) (Course, error) {
-	idVO, err := valueobjects.NewUUID(id)
+	idVO, err := NewCourseID(id)
 	if err != nil {
 		return Course{}, err
 	}
@@ -83,15 +109,17 @@ func NewCourse(id, name, duration string) (Course, error) {
 		return Course{}, err
 	}
 
-	return Course{
+	course := Course{
 		id:       idVO,
 		name:     nameVO,
 		duration: durationVO,
-	}, nil
+	}
+	course.Record(NewCourseCreatedEvent(idVO.String(), nameVO.String(), durationVO.String()))
+	return course, nil
 }
 
 // ID returns the course unique identifier.
-func (c Course) ID() valueobjects.UUID {
+func (c Course) ID() CourseID {
 	return c.id
 }
 
@@ -103,4 +131,17 @@ func (c Course) Name() CourseName {
 // Duration returns the course duration.
 func (c Course) Duration() CourseDuration {
 	return c.duration
+}
+
+// Record records a new domain event.
+func (c *Course) Record(evt event.Event) {
+	c.events = append(c.events, evt)
+}
+
+// PullEvents returns all the recorded domain events.
+func (c Course) PullEvents() []event.Event {
+	evt := c.events
+	c.events = []event.Event{}
+
+	return evt
 }
