@@ -3,6 +3,8 @@ package server
 import (
 	"GourseAPI/internal/platform/server/handler/courses"
 	"GourseAPI/internal/platform/server/handler/health"
+	"GourseAPI/internal/platform/server/middleware/loggin"
+	"GourseAPI/internal/platform/server/middleware/recovery"
 	"GourseAPI/kit/command"
 	"context"
 	"fmt"
@@ -39,6 +41,8 @@ func New(ctx context.Context, host string, port uint, shutdownTimeout time.Durat
 }
 
 func (s *Server) registerRoutes() {
+	s.engine.Use(recovery.Middleware(), logging.Middleware())
+
 	s.engine.GET("/health", health.CheckHandler())
 	s.engine.POST("/courses", courses.CreateHandler(s.commandBus))
 }
