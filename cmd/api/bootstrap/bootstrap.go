@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"log"
 	"time"
 
 	mooc "GourseAPI/internal"
@@ -22,6 +23,8 @@ func Run() error {
 	if err != nil {
 		return err
 	}
+
+	log.Printf("Configuración del servidor: Host=%s, Port=%d", cfg.Host, cfg.Port) // Only for depure
 
 	mysqlURI := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s", cfg.DbUser, cfg.DbPass, cfg.DbHost, cfg.DbPort, cfg.DbName)
 	db, err := sql.Open("mysql", mysqlURI)
